@@ -28,7 +28,7 @@ export const questionRouter = createRouter()
 				data: {
 					question: input.question,
 					ownerToken: "dsdsds",
-					options: {},
+					options: [],
 				},
 			});
 		},

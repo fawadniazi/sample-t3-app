@@ -1,4 +1,4 @@
-# Create T3 App
+# Poll APP based on T3 Stack - Theo Video tutorial
 
 This is an app bootstrapped according to the [init.tips](https://init.tips) stack, also known as the T3-Stack.
 

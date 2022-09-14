@@ -12,7 +12,16 @@ const QuestionPageContent: React.FC<{ id: string }> = ({ id }) => {
 	if (!isLoading && !data) {
 		return <div>No Question Found</div>;
 	}
-	return <div>{data?.question}</div>;
+	return (
+		<div className="p-8 flex flex-col">
+			<div className="text-2xl font-bold">Question : {data?.question}</div>
+			<div>
+				{(data?.options as string[])?.map((option) => (
+					<div key={option}> {option}</div>
+				))}
+			</div>
+		</div>
+	);
 };
 
 const QuestionPage = () => {
