@@ -12,13 +12,6 @@ const QuestionCreator: React.FC = () => {
 		},
 	});
 	return (
-		// <input
-		// 	className="border-4 rounded my-6 mx-6"
-		// 	onSubmit={(event) => {
-		// 		console.log("value?", event.currentTarget.value);
-		// 	}}
-		// ></input>
-
 		<input
 			className="border-4 rounded my-6 mx-6"
 			ref={inputRef}
