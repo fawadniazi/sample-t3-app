@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import { trpc } from "../utils/trpc";
 
@@ -41,7 +42,13 @@ export default function Home() {
 		<div className="flex flex-col p-6">
 			<div className="text-2xl font-bold">Questions </div>
 			{data.map((question) => {
-				return <h1 key={question.id}>{question.question}</h1>;
+				return (
+					<Link key={question.id} href={`question/${question.id}`}>
+						<a>
+							<div>{question.question}</div>
+						</a>
+					</Link>
+				);
 			})}
 
 			<QuestionCreator />
