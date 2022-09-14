@@ -45,7 +45,7 @@ export default function Home() {
 				return (
 					<Link key={question.id} href={`question/${question.id}`}>
 						<a>
-							<div>{question.question}</div>
+							<div className="my-2">{question.question}</div>
 						</a>
 					</Link>
 				);
