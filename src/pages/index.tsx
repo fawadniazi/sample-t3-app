@@ -1,11 +1,14 @@
+import React from "react";
 import { trpc } from "../utils/trpc";
 
 const QuestionCreator: React.FC = () => {
+	const inputRef = React.useRef<HTMLInputElement>(null);
 	const client = trpc.useContext();
-
-	const { mutate } = trpc.useMutation("questions.create", {
+	const { mutate, isLoading } = trpc.useMutation("questions.create", {
 		onSuccess: () => {
 			client.invalidateQueries("questions.get-all");
+			if (!inputRef.current) return;
+			inputRef.current.value = "";
 		},
 	});
 	return (
@@ -18,6 +21,8 @@ const QuestionCreator: React.FC = () => {
 
 		<input
 			className="border-4 rounded my-6 mx-6"
+			ref={inputRef}
+			disabled={isLoading}
 			onKeyDown={(event) => {
 				if (event.key === "Enter") {
 					console.log("enter!!", event.currentTarget.value);
@@ -27,7 +32,6 @@ const QuestionCreator: React.FC = () => {
 						ownerToken: "sdsdsds",
 						options: {},
 					});
-					event.currentTarget.value = "";
 				}
 				console.log("value?", event.currentTarget.value);
 			}}
