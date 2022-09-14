@@ -23,11 +23,12 @@ const QuestionPage = () => {
 	const { id } = query;
 
 	console.log(id);
-
-	if (!id || typeof id !== "string") {
-		return <div>No ID</div>;
+  if (router.isReady) {
+		if (!id || typeof id !== "string") {
+			return <div>No ID</div>;
+		}
+		return <QuestionPageContent id={id} />;
 	}
-	return <QuestionPageContent id={id} />;
 };
 
 export default QuestionPage;
