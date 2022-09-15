@@ -2,36 +2,7 @@ import Link from "next/link";
 import React from "react";
 import { trpc } from "../utils/trpc";
 
-const QuestionCreator: React.FC = () => {
-	const inputRef = React.useRef<HTMLInputElement>(null);
-	const client = trpc.useContext();
-	const { mutate, isLoading } = trpc.useMutation("questions.create", {
-		onSuccess: () => {
-			client.invalidateQueries("questions.get-all-my-questions");
-			if (!inputRef.current) return;
-			inputRef.current.value = "";
-		},
-	});
-	return (
-		<input
-			className="border-4 rounded my-6 mx-6"
-			ref={inputRef}
-			disabled={isLoading}
-			onKeyDown={(event) => {
-				if (event.key === "Enter") {
-					console.log("enter!!", event.currentTarget.value);
 
-					mutate({
-						question: event.currentTarget.value,
-						ownerToken: "sdsdsds",
-						options: {},
-					});
-				}
-				console.log("value?", event.currentTarget.value);
-			}}
-		></input>
-	);
-};
 
 export default function Home() {
 	const { data, isLoading } = trpc.useQuery(["questions.get-all-my-questions"]);
@@ -39,19 +10,31 @@ export default function Home() {
 	if (isLoading || !data) return <div>Loading</div>;
 	console.log(data);
 	return (
-		<div className="flex flex-col p-6">
-			<div className="text-2xl font-bold">Questions </div>
+		<div className="flex flex-col p-6 w-screen">
+			<div className="header flex w-full justify-between">
+				<div className="text-2xl font-bold">Your Questions </div>
+				<Link href="/create">
+					<a className="bg-gray-300 rounded text-gray-800 p-4">
+						Create New Questions
+					</a>
+				</Link>
+			</div>
+
 			{data.map((question) => {
 				return (
-					<Link key={question.id} href={`question/${question.id}`}>
-						<a>
-							<div className="my-2">{question.question}</div>
-						</a>
-					</Link>
+					<div key={question.id} className="flex flex-col my-2">
+						<Link href={`question/${question.id}`}>
+							<a>
+								<div className="my-2">{question.question}</div>
+
+								<span className="">
+									Created on {question.createdAt.toDateString()}
+								</span>
+							</a>
+						</Link>
+					</div>
 				);
 			})}
-
-			<QuestionCreator />
 		</div>
 	);
 }
