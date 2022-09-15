@@ -7,7 +7,7 @@ import { prisma } from "../db/client";
  * Replace this with an object if you want to pass things to createContextInner
  */
 //type CreateContextOptions = Record<string, never>;
-type CreateContextOptions = {}
+//type CreateContextOptions = {}
 
 /** Use this helper for:
  * - testing, where we dont have to Mock Next.js' req/res
