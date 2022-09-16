@@ -1,13 +1,12 @@
 import React from "react";
 import { trpc } from "../utils/trpc";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	CreateQuestionInputType,
 	createQuestionValidator,
 } from "../shared/create-question-validator";
 import { useRouter } from "next/router";
-import { router } from "@trpc/server";
 
 const CreateQuestionForm = () => {
 	const router = useRouter();
@@ -16,15 +15,28 @@ const CreateQuestionForm = () => {
 		handleSubmit,
 		watch,
 		reset,
+		control,
 		formState: { errors },
 	} = useForm<CreateQuestionInputType>({
 		resolver: zodResolver(createQuestionValidator),
+		defaultValues: {
+			options: [{ text: "Yes" }, { text: "No" }],
+		},
 	});
+
+	const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
+		{
+			control, // control props comes from useForm (optional: if you are using FormContext)
+			name: "options", // unique name for your Field Array
+		}
+	);
+
 	const { mutate, isLoading, data } = trpc.useMutation("questions.create", {
 		onSuccess: (data) => {
 			router.push(`/question/${data.id}`);
 		},
 	});
+
 	const onSubmit = (data: any) => console.log(data);
 	if (isLoading || data) return <div> Loading ...</div>;
 
@@ -54,6 +66,33 @@ const CreateQuestionForm = () => {
 							{errors.question && (
 								<p className="text-red-400">{errors.question.message}</p>
 							)}
+						</div>
+						{fields.map((field, index) => {
+							return (
+								<div key={field.id}>
+									<section className={"section"} key={field.id}>
+										<input
+											placeholder="name"
+											{...register(`options.${index}.text` as const, {
+												required: true,
+											})}
+											className="form-input mt-1 block w-full text-gray-800"
+										/>
+
+										<button type="button" onClick={() => remove(index)}>
+											DELETE
+										</button>
+									</section>
+								</div>
+							);
+						})}
+						<div>
+							<button
+								type="button"
+								onClick={() => append({ text: "Another Option" })}
+							>
+								Add options
+							</button>
 						</div>
 						<div className="grid grid-cols-1 gap-6 col-span-2">
 							<label className="block">

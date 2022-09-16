@@ -35,7 +35,7 @@ export const questionRouter = createRouter()
 				data: {
 					question: input.question,
 					ownerToken: ctx.token,
-					options: [],
+					options: input.options,
 				},
 			});
 			// return { newQuestion };
