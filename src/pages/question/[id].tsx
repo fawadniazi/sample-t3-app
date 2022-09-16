@@ -40,7 +40,7 @@ const QuestionPage = () => {
 	const { id } = query;
 
 	console.log(id);
-  if (router.isReady) {
+	if (router.isReady) {
 		if (!id || typeof id !== "string") {
 			return <div>No ID</div>;
 		}
