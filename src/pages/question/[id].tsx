@@ -9,7 +9,11 @@ const QuestionPageContent: React.FC<{ id: string }> = ({ id }) => {
 		},
 	]);
 
-	if (!isLoading && !data) {
+	const { mutate, data: voteResponse } = trpc.useMutation(
+		"questions.vote-on-question"
+	);
+
+	if (!data || !data.question) {
 		return <div>No Question Found</div>;
 	}
 	return (
@@ -23,10 +27,22 @@ const QuestionPageContent: React.FC<{ id: string }> = ({ id }) => {
 			<div className="text-2xl font-bold">
 				Question : {data?.question?.question}
 			</div>
-			<div>
-				{(data?.question?.options as string[])?.map((option) => (
-					<div key={option}> {(option as any).text}</div>
-				))}
+			<div className="flex flex-col gap-5">
+				{(data?.question?.options as string[])?.map((option, index) => {
+					if (data?.isOwner || data?.vote) {
+						return <div key={index}> {(option as any).text}</div>;
+					}
+					return (
+						<button
+							onClick={() =>
+								mutate({ questionId: data?.question!.id, option: index })
+							}
+							key={index}
+						>
+							{(option as any).text}
+						</button>
+					);
+				})}
 			</div>
 		</div>
 	);
