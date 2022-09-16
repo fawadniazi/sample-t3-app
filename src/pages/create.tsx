@@ -1,22 +1,32 @@
-import Link from "next/link";
 import React from "react";
 import { trpc } from "../utils/trpc";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+	CreateQuestionInputType,
+	createQuestionValidator,
+} from "../shared/create-question-validator";
+import { useRouter } from "next/router";
+import { router } from "@trpc/server";
 
 const CreateQuestionForm = () => {
-	const { mutate, isLoading } = trpc.useMutation("questions.create", {
-		onSuccess: () => {},
-	});
-
+	const router = useRouter();
 	const {
 		register,
 		handleSubmit,
 		watch,
+		reset,
 		formState: { errors },
-	} = useForm();
+	} = useForm<CreateQuestionInputType>({
+		resolver: zodResolver(createQuestionValidator),
+	});
+	const { mutate, isLoading, data } = trpc.useMutation("questions.create", {
+		onSuccess: (data) => {
+			router.push(`/question/${data.id}`);
+		},
+	});
 	const onSubmit = (data: any) => console.log(data);
-
-	console.log(watch("example")); // watch input value by passing the name of it
+	if (isLoading || data) return <div> Loading ...</div>;
 
 	return (
 		<div className="antialiased text-gray-100 px-6">
@@ -25,17 +35,25 @@ const CreateQuestionForm = () => {
 				<p className="mt-2 text-lg text-gray-300">
 					These are form elements this plugin styles by default.
 				</p>
-				<form onSubmit={handleSubmit(onSubmit)}>
+				<form
+					onSubmit={handleSubmit((data) => {
+						mutate(data);
+					})}
+				>
 					<div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 						<div className="grid grid-cols-1 gap-6 col-span-2">
 							<label className="block">
 								<span className="text-gray-200">Question</span>
 								<input
+									{...register("question")}
 									type="text"
 									className="form-input mt-1 block w-full text-gray-800"
 									placeholder="How do magnets works?"
 								/>
 							</label>
+							{errors.question && (
+								<p className="text-red-400">{errors.question.message}</p>
+							)}
 						</div>
 						<div className="grid grid-cols-1 gap-6 col-span-2">
 							<label className="block">
@@ -51,7 +69,7 @@ const CreateQuestionForm = () => {
 			</div>
 		</div>
 	);
-};;;
+};
 
 const QuestionCreate: React.FC = () => {
 	return <CreateQuestionForm />;
@@ -59,11 +77,8 @@ const QuestionCreate: React.FC = () => {
 
 export default QuestionCreate;
 
-
-
-
-
-{/* <label className="block">
+{
+	/* <label className="block">
 							<span className="text-gray-200">Input (email)</span>
 							<input
 								type="email"
@@ -252,19 +267,18 @@ export default QuestionCreate;
 						<label className="block">
 							<span className="text-gray-200">Input (file, multiple)</span>
 							<input type="file" multiple className="mt-1 block w-full" />
-						</label> */}
+						</label> */
+}
 
+// /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
+// <form onSubmit={handleSubmit(onSubmit)}>
+// 	{/* register your input into the hook by invoking the "register" function */}
+// 	<input type="text" defaultValue="test" {...register("example")} />
 
+// 	{/* include validation with required or other standard HTML validation rules */}
+// 	<input type="text" {...register("exampleRequired", { required: true })} />
+// 	{/* errors will return when field validation fails  */}
+// 	{errors.exampleRequired && <span>This field is required</span>}
 
-            		// /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
-		// <form onSubmit={handleSubmit(onSubmit)}>
-		// 	{/* register your input into the hook by invoking the "register" function */}
-		// 	<input type="text" defaultValue="test" {...register("example")} />
-
-		// 	{/* include validation with required or other standard HTML validation rules */}
-		// 	<input type="text" {...register("exampleRequired", { required: true })} />
-		// 	{/* errors will return when field validation fails  */}
-		// 	{errors.exampleRequired && <span>This field is required</span>}
-
-		// 	<input type="submit" />
-		// </form>
+// 	<input type="submit" />
+// </form>

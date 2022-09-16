@@ -1,10 +1,11 @@
 import { createRouter } from "./context";
 import { z } from "zod";
+import { createQuestionValidator } from "../../shared/create-question-validator";
 
 export const questionRouter = createRouter()
 	.query("get-all-my-questions", {
 		async resolve({ ctx }) {
-      if (!ctx.token) return [];
+			if (!ctx.token) return [];
 			return await ctx.prisma.pollQuestion.findMany({
 				where: {
 					ownerToken: {
@@ -27,19 +28,16 @@ export const questionRouter = createRouter()
 		},
 	})
 	.mutation("create", {
-		input: z.object({
-			question: z.string().min(5).max(600),
-			ownerToken: z.string().min(5).max(255),
-			options: z.object({}),
-		}),
+		input: createQuestionValidator,
 		async resolve({ input, ctx }) {
-			if (!ctx.token) return { error: "Unauthorized" };
-			const newQuestion = await ctx.prisma.pollQuestion.create({
+			if (!ctx.token) throw new Error("Unauthorized");
+			return await ctx.prisma.pollQuestion.create({
 				data: {
 					question: input.question,
 					ownerToken: ctx.token,
 					options: [],
 				},
 			});
+			// return { newQuestion };
 		},
 	});
